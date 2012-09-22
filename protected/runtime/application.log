@@ -1,0 +1,62 @@
+2012/09/21 03:11:33 [error] [exception.CException] exception 'CException' with message 'Property "CDbConnection.tables" is not defined.' in C:\wamp\yii-1.1.12.b600af\framework\base\CComponent.php:131
+Stack trace:
+#0 C:\wamp\www\yii-migration-diff\protected\commands\MigrationDiffCommand.php(6): CComponent->__get('tables')
+#1 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(68): MigrationDiffCommand->run(Array)
+#2 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#3 C:\wamp\yii-1.1.12.b600af\framework\base\CApplication.php(162): CConsoleApplication->processRequest()
+#4 C:\wamp\yii-1.1.12.b600af\framework\yiic.php(34): CApplication->run()
+#5 C:\wamp\www\yii-migration-diff\protected\yiic.php(7): require_once('C:\wamp\yii-1.1...')
+#6 C:\wamp\www\yii-migration-diff\protected\yiic(4): require_once('C:\wamp\www\yii...')
+#7 {main}
+---
+2012/09/22 16:36:58 [error] [php] include(MigrateCommand.php): failed to open stream: No such file or directory (C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php:423)
+Stack trace:
+#0 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(3): spl_autoload_call()
+#1 C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php(316): require()
+#2 C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php(198): import()
+#3 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(138): createComponent()
+#4 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(65): CConsoleCommandRunner->createCommand()
+#5 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run()
+#6 C:\wamp\yii-1.1.12.b600af\framework\base\CApplication.php(162): CConsoleApplication->processRequest()
+#7 C:\wamp\yii-1.1.12.b600af\framework\yiic.php(34): CConsoleApplication->run()
+#8 C:\wamp\www\yii-migration-diff\protected\yiic.php(7): require_once()
+
+2012/09/22 16:39:57 [error] [php] include(C:\wamp\yii-1.1.12.b600af\framework\cli\commands\shell\MigrateCommand.php): failed to open stream: No such file or directory (C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php:397)
+Stack trace:
+#0 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(5): spl_autoload_call()
+#1 C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php(316): require()
+#2 C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php(198): import()
+#3 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(138): createComponent()
+#4 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(65): CConsoleCommandRunner->createCommand()
+#5 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run()
+#6 C:\wamp\yii-1.1.12.b600af\framework\base\CApplication.php(162): CConsoleApplication->processRequest()
+#7 C:\wamp\yii-1.1.12.b600af\framework\yiic.php(34): CConsoleApplication->run()
+#8 C:\wamp\www\yii-migration-diff\protected\yiic.php(7): require_once()
+
+2012/09/22 17:12:33 [error] [exception.CException] exception 'CException' with message 'Property "MigrateExtendedCommand.syncConnectionID" is not defined.' in C:\wamp\yii-1.1.12.b600af\framework\base\CComponent.php:131
+Stack trace:
+#0 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(22): CComponent->__get('syncConnectionI...')
+#1 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(11): MigrateExtendedCommand->getSyncDbConnection()
+#2 [internal function]: MigrateExtendedCommand->actionSync(Array)
+#3 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommand.php(173): ReflectionMethod->invokeArgs(Object(MigrateExtendedCommand), Array)
+#4 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(68): CConsoleCommand->run(Array)
+#5 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#6 C:\wamp\yii-1.1.12.b600af\framework\base\CApplication.php(162): CConsoleApplication->processRequest()
+#7 C:\wamp\yii-1.1.12.b600af\framework\yiic.php(34): CApplication->run()
+#8 C:\wamp\www\yii-migration-diff\protected\yiic.php(7): require_once('C:\wamp\yii-1.1...')
+#9 {main}
+---
+2012/09/22 17:13:11 [error] [exception.CException] exception 'CException' with message 'Object configuration must be an array containing a "class" element.' in C:\wamp\yii-1.1.12.b600af\framework\YiiBase.php:195
+Stack trace:
+#0 C:\wamp\yii-1.1.12.b600af\framework\base\CModule.php(387): YiiBase::createComponent(Array)
+#1 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(22): CModule->getComponent('syncDb')
+#2 C:\wamp\www\yii-migration-diff\protected\commands\MigrateExtendedCommand.php(11): MigrateExtendedCommand->getSyncDbConnection()
+#3 [internal function]: MigrateExtendedCommand->actionSync(Array)
+#4 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommand.php(173): ReflectionMethod->invokeArgs(Object(MigrateExtendedCommand), Array)
+#5 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleCommandRunner.php(68): CConsoleCommand->run(Array)
+#6 C:\wamp\yii-1.1.12.b600af\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#7 C:\wamp\yii-1.1.12.b600af\framework\base\CApplication.php(162): CConsoleApplication->processRequest()
+#8 C:\wamp\yii-1.1.12.b600af\framework\yiic.php(34): CApplication->run()
+#9 C:\wamp\www\yii-migration-diff\protected\yiic.php(7): require_once('C:\wamp\yii-1.1...')
+#10 {main}
+---
