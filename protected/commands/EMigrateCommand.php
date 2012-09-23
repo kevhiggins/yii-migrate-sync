@@ -5,7 +5,7 @@ Yii::import('application.components.db.schema.mysql.EMysqlSchema');
 Yii::import('application.components.db.schema.mysql.EMysqlTableSchema');
 Yii::import('application.components.db.schema.mysql.EMysqlColumnSchema');
 
-class MigrateExtendedCommand extends MigrateCommand
+class EMigrateCommand extends MigrateCommand
 {
 	public $db;
 	public $syncDb;
