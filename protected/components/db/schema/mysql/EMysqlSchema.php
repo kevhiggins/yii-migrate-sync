@@ -47,7 +47,7 @@ class EMysqlSchema extends CMysqlSchema
 	{
 		$row=$this->getDbConnection()->createCommand('SHOW CREATE TABLE '.$table->rawName)->queryRow();
 		$matches=array();
-		$regexp='/FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+([^\(^\s]+)\s*\(([^\)]+)\)\s+([^,\n]*)/mi';
+		$regexp='/CONSTRAINT\s+([^\(^\s]+)\s+FOREIGN KEY\s+\(([^\)]+)\)\s+REFERENCES\s+([^\(^\s]+)\s*\(([^\)]+)\)([^,\n]*)/mi';
 		foreach($row as $sql)
 		{
 			if(preg_match_all($regexp,$sql,$matches,PREG_SET_ORDER))
@@ -55,14 +55,15 @@ class EMysqlSchema extends CMysqlSchema
 		}
 		foreach($matches as $match)
 		{
-			if(isset($match[4]))
-				$types = $this->findReferenceOptions($match[4]);
+			$types = array('name'=>$match[1]);
+			if(isset($match[5]))
+				$types += $this->findReferenceOptions($match[5]);
 						
-			$keys=array_map('trim',explode(',',str_replace('`','',$match[1])));
-			$fks=array_map('trim',explode(',',str_replace('`','',$match[3])));
+			$keys=array_map('trim',explode(',',str_replace('`','',$match[2])));
+			$fks=array_map('trim',explode(',',str_replace('`','',$match[4])));
 			foreach($keys as $k=>$name)
 			{
-				$table->foreignKeys[$name]=array(str_replace('`','',$match[2]),$fks[$k]);
+				$table->foreignKeys[$name]=array(str_replace('`','',$match[3]),$fks[$k]);
 				if(isset($types))
 					$table->referenceOptions[$name] = $types; 
 				if(isset($table->columns[$name]))
@@ -127,8 +128,31 @@ class EMysqlSchema extends CMysqlSchema
 				$type = array_shift($pieces);
 				$types[$type] = implode(' ', $pieces);
 			}
+			if(!isset($types['DELETE']))
+				$types['DELETE'] = null;
+			if(!isset($types['UPDATE']))
+				$types['UPDATE'] = null;
 			return $types;
 		}		
 		return null;
 	}
+	
+	public function generateForeignKey($name, $columns, $refTable, $refColumns, $delete=null, $update=null)
+	{
+		$columns=preg_split('/\s*,\s*/',$columns,-1,PREG_SPLIT_NO_EMPTY);
+		foreach($columns as $i=>$col)
+			$columns[$i]=$this->quoteColumnName($col);
+		$refColumns=preg_split('/\s*,\s*/',$refColumns,-1,PREG_SPLIT_NO_EMPTY);
+		foreach($refColumns as $i=>$col)
+			$refColumns[$i]=$this->quoteColumnName($col);
+		$sql='CONSTRAINT '.$this->quoteColumnName($name)
+		.' FOREIGN KEY ('.implode(', ', $columns).')'
+		.' REFERENCES '.$this->quoteTableName($refTable)
+		.' ('.implode(', ', $refColumns).')';
+		if($delete!==null)
+			$sql.=' ON DELETE '.$delete;
+		if($update!==null)
+			$sql.=' ON UPDATE '.$update;
+		return $sql;
+	}	
 }

@@ -35,7 +35,7 @@ return array(
 	),
 	'commandMap'=>array(
 		'migrate'=>array(
-			'class'=>'application.commands.MigrateExtendedCommand',
+			'class'=>'application.commands.EMigrateCommand',
 			'db'=>array(
 				'class'=>'CDbConnection',
 				'connectionString' => 'mysql:host=localhost;dbname=migration-diff',

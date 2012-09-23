@@ -14,9 +14,9 @@ class EMigrateCommand extends MigrateCommand
 	
 	public function actionSync($args)
 	{
-		$db = $this->getDbConnection();
-		CVarDumper::dump($db->schema->getTables());
-		//$this->checkTables();
+		//$db = $this->getDbConnection();
+		//CVarDumper::dump($db->schema->getTables());
+		$this->checkTables();
 		
 		// Foreach sync table
 			// If does not exist in dbTables
@@ -38,13 +38,16 @@ class EMigrateCommand extends MigrateCommand
 	protected function checkTables()
 	{
 		$db = $this->getDbConnection();
-	//	$syncDb = $this->getSyncDbConnection();
+		$syncDb = $this->getSyncDbConnection();
 		
-		CVarDumper::dump($db->schema->getTables());
-		exit;
+		//CVarDumper::dump($db->schema->getTables());
+	//	exit;
 		
 		$dbTables = $db->schema->getTables();
-		$syncDbTables = $syncDb->schema->getTables();
+	//	$syncDbTables = $syncDb->schema->getTables();
+		
+		CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
+		exit;
 		
 		// Find New Tables
 		$newTables = array_diff_key($dbTables, $syncDbTables);
@@ -75,6 +78,8 @@ class EMigrateCommand extends MigrateCommand
 	
 	protected function addTableMigration($table)
 	{
+		echo $table->generateSQL();
+		exit;
 		$output = "\$this->createTable('{$table->name}', array(\n";
 		foreach($table->columns as $column)
 		{
