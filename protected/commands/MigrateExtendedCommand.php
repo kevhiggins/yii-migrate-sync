@@ -78,24 +78,10 @@ class MigrateExtendedCommand extends MigrateCommand
 		$output = "\$this->createTable('{$table->name}', array(\n";
 		foreach($table->columns as $column)
 		{
-			$sql = $this->generateColumnSQL($column);
+			$sql = $column->generateSQL();
 			$output .= "'{$column->name}' => '$sql',";
 		}		 
 		$output .= ");";
-	}
-	
-	protected function generateColumnSQL($column)
-	{
-		$output = $column->dbType;
-		if(!$column->allowNull)
-			$output .= ' NOT NULL';
-		if($column->defaultValue !== null)
-			$output .= " DEFAULT '{$column->defaultValue}'";
-		else if($column->allowNull)
-			$output .= ' DEFAULT NULL';
-		if($column->autoIncrement)
-			$output .= ' AUTOINCREMENT';
-		return $output;
 	}
 	
 	protected function deleteTableMigration()

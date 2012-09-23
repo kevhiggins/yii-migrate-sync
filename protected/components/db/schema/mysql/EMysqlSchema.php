@@ -77,7 +77,7 @@ class EMysqlSchema extends CMysqlSchema
 	protected function findIndexes($table, $row)
 	{
 		// Extract indexes
-		$keyRegexp = '/(?:(UNIQUE) |)KEY\s+([^\(^\s]+)\s*\((.*)\)/mi';
+		$keyRegexp = '/(UNIQUE |PRIMARY |FOREIGN |)KEY\s+([^\(^\s]+)?\s*\((.*)\)/mi';
 		$matches = array();
 		foreach($row as $sql)
 		{
@@ -86,13 +86,17 @@ class EMysqlSchema extends CMysqlSchema
 		}
 		foreach($matches as $match)
 		{
+			if($match[1] === 'FOREIGN ')
+				continue;
 			$isUnique = false;
-			if($match[1] === 'UNIQUE')
+			if($match[1] === 'UNIQUE ' || $match[1] === 'PRIMARY ')
 			{
 				$isUnique = true;
 			}
 			$cols=array_map('trim',explode(',',str_replace('`','',$match[3])));
-			$table->indexes[str_replace('`', '', $match[2])] = array('columns'=>$cols, 'isUnique'=>$isUnique);
+			$indexName = $match[1] === 'PRIMARY ' ? 'PRIMARY' : str_replace('`', '', $match[2]);
+			
+			$table->indexes[$indexName] = array('columns'=>$cols, 'isUnique'=>$isUnique);
 		}		
 	}
 	
