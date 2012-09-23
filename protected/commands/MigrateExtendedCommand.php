@@ -8,6 +8,8 @@ Yii::import('application.components.db.schema.mysql.EMysqlColumnSchema');
 class MigrateExtendedCommand extends MigrateCommand
 {
 	public $db;
+	public $syncDb;
+	
 	public $syncConnectionId = 'syncDb';
 	
 	public function actionSync($args)
@@ -136,10 +138,11 @@ class MigrateExtendedCommand extends MigrateCommand
 	{
 		if($this->_syncDb!==null)
 			return $this->_syncDb;
-		else if(($this->_syncDb=Yii::app()->getComponent($this->syncConnectionId)) instanceof CDbConnection)
+		else if(($this->_syncDb=Yii::createComponent($this->syncDb)) instanceof CDbConnection)
 			return $this->_syncDb;
-	
-		echo "Error: CMigrationCommand.connectionID '{$this->connectionID}' is invalid. Please make sure it refers to the ID of a CDbConnection application component.\n";
+		
+		echo "Error: syncDb config invalid.";
 		exit(1);
 	}
+	
 }

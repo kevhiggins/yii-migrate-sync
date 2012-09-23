@@ -23,14 +23,6 @@ return array(
 //			),
 		),
 		*/
-		'syncDb'=>array(
-				'class'=>'CDbConnection',
-				'connectionString' => 'mysql:host=localhost;dbname=migration-sync',
-				'emulatePrepare' => true,
-				'username' => 'root',
-				'password' => '',
-				'charset' => 'utf8',
-		),
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -45,16 +37,27 @@ return array(
 		'migrate'=>array(
 			'class'=>'application.commands.MigrateExtendedCommand',
 			'db'=>array(
-					'class'=>'CDbConnection',
-					'connectionString' => 'mysql:host=localhost;dbname=migration-diff',
-					'emulatePrepare' => true,
-					'username' => 'root',
-					'password' => '',
-					'charset' => 'utf8',
-					'driverMap' => array(
-						'mysql' => 'EMysqlSchema',
-					),
-			),				
+				'class'=>'CDbConnection',
+				'connectionString' => 'mysql:host=localhost;dbname=migration-diff',
+				'emulatePrepare' => true,
+				'username' => 'root',
+				'password' => '',
+				'charset' => 'utf8',
+				'driverMap' => array(
+					'mysql' => 'EMysqlSchema',
+				),
+			),
+			'syncDb'=>array(
+				'class'=>'CDbConnection',
+				'connectionString' => 'mysql:host=localhost;dbname=migration-sync',
+				'emulatePrepare' => true,
+				'username' => 'root',
+				'password' => '',
+				'charset' => 'utf8',
+				'driverMap' => array(
+					'mysql' => 'EMysqlSchema',
+				),					
+			),						
 		),
 	),
 );
