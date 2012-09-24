@@ -1,7 +1,7 @@
 <?php
 class EMysqlColumnSchema extends CMysqlColumnSchema
 {
-	protected function generateSQL()
+	public function generateSQL()
 	{
 		$output = $this->dbType;
 		if(!$this->allowNull)

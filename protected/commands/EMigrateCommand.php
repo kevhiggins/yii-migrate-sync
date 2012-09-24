@@ -12,8 +12,12 @@ class EMigrateCommand extends MigrateCommand
 	
 	public $syncConnectionId = 'syncDb';
 	
+	protected $_schema;
+	
 	public function actionSync($args)
 	{
+		
+		
 		//$db = $this->getDbConnection();
 		//CVarDumper::dump($db->schema->getTables());
 		$this->checkTables();
@@ -40,13 +44,16 @@ class EMigrateCommand extends MigrateCommand
 		$db = $this->getDbConnection();
 		$syncDb = $this->getSyncDbConnection();
 		
+		$this->_schema = $db->schema;
+		
 		//CVarDumper::dump($db->schema->getTables());
 	//	exit;
 		
 		$dbTables = $db->schema->getTables();
 	//	$syncDbTables = $syncDb->schema->getTables();
-		
-		CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
+	//	CVarDumper::dump($this->addTableMigration($dbTables['test']));
+		$this->writeTestFile($this->addTableMigration($dbTables['test']));
+		//CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
 		exit;
 		
 		// Find New Tables
@@ -78,15 +85,16 @@ class EMigrateCommand extends MigrateCommand
 	
 	protected function addTableMigration($table)
 	{
-		echo $table->generateSQL();
-		exit;
 		$output = "\$this->createTable('{$table->name}', array(\n";
 		foreach($table->columns as $column)
 		{
 			$sql = $column->generateSQL();
-			$output .= "'{$column->name}' => '$sql',";
+			$output .= "'{$column->name}' => '$sql',\n";
 		}		 
-		$output .= ");";
+		$output .= "),\n";
+		$output .= '\''.$table->generateSQL($this->_schema).'\'';
+		$output .= ');';
+		return $output;
 	}
 	
 	protected function deleteTableMigration()
@@ -134,6 +142,11 @@ class EMigrateCommand extends MigrateCommand
 		
 		echo "Error: syncDb config invalid.";
 		exit(1);
+	}
+	
+	protected function writeTestFile($data)
+	{
+		file_put_contents('C:\wamp\www\yii-migrate-sync\test.txt', $data);
 	}
 	
 }
