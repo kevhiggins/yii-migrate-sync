@@ -13,6 +13,7 @@ class EMigrateCommand extends MigrateCommand
 	public $syncConnectionId = 'syncDb';
 	
 	protected $_schema;
+	protected $_migrations;
 	
 	public function actionSync($args)
 	{
@@ -52,7 +53,13 @@ class EMigrateCommand extends MigrateCommand
 		$dbTables = $db->schema->getTables();
 	//	$syncDbTables = $syncDb->schema->getTables();
 	//	CVarDumper::dump($this->addTableMigration($dbTables['test']));
-		$this->writeTestFile($this->addTableMigration($dbTables['test']));
+//		$this->_migrations['name'] = 'm120922_203026_woo';
+//		$this->_migrations['create'][] = $dbTables['test']->migrationCreate($db->schema);
+//		$this->_migrations['drop'][] = $dbTables['test']->migrationDrop($db->schema);
+		$path  = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
+		
+		$this->writeTestFile($this->renderFile($path, array('db'=>$db), true));
+		
 		//CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
 		exit;
 		
@@ -83,19 +90,7 @@ class EMigrateCommand extends MigrateCommand
 		
 	}
 	
-	protected function addTableMigration($table)
-	{
-		$output = "\$this->createTable('{$table->name}', array(\n";
-		foreach($table->columns as $column)
-		{
-			$sql = $column->generateSQL();
-			$output .= "'{$column->name}' => '$sql',\n";
-		}		 
-		$output .= "),\n";
-		$output .= '\''.$table->generateSQL($this->_schema).'\'';
-		$output .= ');';
-		return $output;
-	}
+
 	
 	protected function deleteTableMigration()
 	{

@@ -5,20 +5,56 @@ class EMysqlTableSchema extends CMysqlTableSchema
 	public $indexes = array();
 	public $engine;
 	
-	public function generateSQL($schema)
+	public function migrationCreate($schema)
 	{
-		$output = $this->generateIndexes($schema);
-		$output .= $this->generateForeignKeys($schema);
-		if(isset($this->engine))
-			$output .= "ENGINE={$this->engine}";
+		$output = "\t\t\$this->createTable('{$this->name}', array(\n";
+		foreach($this->columns as $column)
+			$output .= "\t\t\t'{$column->name}' => \"".$column->generateSQL()."\",\n";
+		
+		foreach($this->generateIndexes($schema) as $index)
+			$output .= "\t\t\t'$index',\n";
+		
+		$output = rtrim($output, "\n,");
+		
+		$output .= "\n\t\t),\n";
+		$output .= "\t\t'".$this->generateOptions()."'";
+		$output .= ");\n";
 		return $output;
 	}
 	
-	protected function generateIndexes($schema)
+	public function migrationDrop($schema)
+	{
+		return "\t\t\$this->dropTable('{$this->name}');\n";
+	}
+	
+	public function migrationDelete()
+	{
+		
+	}
+	
+	public function generateSQL($schema)
+	{
+		$output = $this->generateIndexes($schema);
+	//	$output .= $this->generateForeignKeys($schema);
+		
+		return rtrim($output, "\n,");
+	}
+	
+	public function generateOptions()
 	{
 		$output = '';
+		if(isset($this->engine))
+			$output .= "ENGINE={$this->engine}";
+		return $output;		
+	}
+	
+	
+	public function generateIndexes($schema)
+	{
+		$indexes = array();
 		foreach($this->indexes as $name=>$index)
 		{
+			$output = '';
 			if($name === 'PRIMARY')
 			{
 				$output .= 'PRIMARY KEY';
@@ -30,9 +66,9 @@ class EMysqlTableSchema extends CMysqlTableSchema
 				$output .= 'KEY '.$schema->quoteSimpleColumnName($name);
 			}
 			$output .= ' ('.implode(',', array_map('CMysqlSchema::quoteSimpleColumnName', $index['columns'])).')';
-			$output .= ",\n";
+			$indexes[$name] = $output;
 		}
-		return $output;		
+		return $indexes;		
 	}
 	
 	protected function generateForeignKeys($schema)

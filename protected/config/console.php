@@ -11,9 +11,8 @@ return array(
 	// application components
 	'components'=>array(
 		// uncomment the following to use a MySQL database
-/*
 		'db'=>array(
-			'connectionString' => 'mysql:host=localhost;dbname=migration-diff',
+			'connectionString' => 'mysql:host=localhost;dbname=migration-sync',
 			'emulatePrepare' => true,
 			'username' => 'root',
 			'password' => '',
@@ -22,7 +21,6 @@ return array(
 //				'mysql' => 'EMysqlSchema',
 //			),
 		),
-		*/
 		'log'=>array(
 			'class'=>'CLogRouter',
 			'routes'=>array(
@@ -34,7 +32,7 @@ return array(
 		),
 	),
 	'commandMap'=>array(
-		'migrate'=>array(
+		'emigrate'=>array(
 			'class'=>'application.commands.EMigrateCommand',
 			'db'=>array(
 				'class'=>'CDbConnection',

@@ -55,7 +55,7 @@ class EMysqlSchema extends CMysqlSchema
 		}
 		foreach($matches as $match)
 		{
-			$types = array('name'=>$match[1]);
+			$types = array('name'=>str_replace('`','', $match[1]));
 			if(isset($match[5]))
 				$types += $this->findReferenceOptions($match[5]);
 						
