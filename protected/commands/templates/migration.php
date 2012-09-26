@@ -13,16 +13,24 @@ class m120922_203026_woo extends CDbMigration
 	public function safeUp()
 	{
 <?php 
-foreach($db->schema->tables as $table)
-	echo $table->migrationCreate($db->schema)."\n";
+//var_dump($this);
+//exit;
+echo $builder->beforeMigrationOutput();
+echo $builder->createCreateTablesMigration();
+echo $builder->afterMigrationOutput();
+//foreach($db->schema->tables as $table)
+//	echo $table->migrationCreate($db->schema)."\n";
 ?>
 	}
 	
 	public function safeDown()
 	{
 <?php 
-foreach($db->schema->tables as $table)
-	echo $table->migrationDrop($db->schema);
+echo $builder->beforeMigrationOutput();
+echo $builder->createDropTablesMigration();
+echo $builder->afterMigrationOutput();
+//foreach($db->schema->tables as $table)
+//	echo $table->migrationDrop($db->schema);
 ?>
 	}
 }

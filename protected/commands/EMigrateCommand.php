@@ -1,6 +1,7 @@
 <?php
 Yii::import('system.cli.commands.MigrateCommand');
 //Yii::import('application.components.Controller');\
+Yii::import('application.components.db.schema.EDbMigrationBuilder');
 Yii::import('application.components.db.schema.mysql.EMysqlSchema');
 Yii::import('application.components.db.schema.mysql.EMysqlTableSchema');
 Yii::import('application.components.db.schema.mysql.EMysqlColumnSchema');
@@ -58,7 +59,7 @@ class EMigrateCommand extends MigrateCommand
 //		$this->_migrations['drop'][] = $dbTables['test']->migrationDrop($db->schema);
 		$path  = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
 		
-		$this->writeTestFile($this->renderFile($path, array('db'=>$db), true));
+		$this->writeTestFile($this->renderFile($path, array('builder'=>new EDbMigrationBuilder($db, $syncDb)), true));
 		
 		//CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
 		exit;
