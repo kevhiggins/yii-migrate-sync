@@ -57,9 +57,16 @@ class EMigrateCommand extends MigrateCommand
 //		$this->_migrations['name'] = 'm120922_203026_woo';
 //		$this->_migrations['create'][] = $dbTables['test']->migrationCreate($db->schema);
 //		$this->_migrations['drop'][] = $dbTables['test']->migrationDrop($db->schema);
-		$path  = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
 		
-		$this->writeTestFile($this->renderFile($path, array('builder'=>new EDbMigrationBuilder($db, $syncDb)), true));
+		
+		$builder = new EDbMigrationBuilder($this, $db, $syncDb);
+		$path  = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
+		$name = $builder->name;
+		
+		//$filename = "C:\wamp\www\yii-migrate-sync\protected\migrations\";
+		
+		$filename = 'C:\wamp\www\yii-migrate-sync\protected\migrations\\'.$builder->name.'.php';
+		$this->writeTestFile($filename, $this->renderFile($path, array('builder'=>$builder), true));
 		
 		//CVarDumper::dump($dbTables['test']->generateSQL($db->schema));
 		exit;
@@ -84,6 +91,11 @@ class EMigrateCommand extends MigrateCommand
 		}
 		
 	//	CVarDumper::dump($deletedTables);
+	}
+	
+	public function getMigrationName()
+	{
+		return 'm'.gmdate('ymd_His').'_'.'migration_sync';
 	}
 	
 	protected function checkColumns($table)
@@ -140,9 +152,9 @@ class EMigrateCommand extends MigrateCommand
 		exit(1);
 	}
 	
-	protected function writeTestFile($data)
+	protected function writeTestFile($filename, $data)
 	{
-		file_put_contents('C:\wamp\www\yii-migrate-sync\test.txt', $data);
+		file_put_contents($filename, $data);
 	}
 	
 }

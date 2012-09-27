@@ -11,7 +11,12 @@ class EMysqlColumnSchema extends CMysqlColumnSchema
 		else if($this->allowNull)
 			$output .= ' DEFAULT NULL';
 		if($this->autoIncrement)
-			$output .= ' AUTOINCREMENT';
+			$output .= ' AUTO_INCREMENT';
 		return $output;
-	}	
+	}
+	
+	public function getType()
+	{
+		return $this->generateSQL();
+	}
 }

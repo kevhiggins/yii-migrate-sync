@@ -7,7 +7,7 @@
 ?>
 <?php echo "<?php\n"; ?>
 
-class m120922_203026_woo extends CDbMigration
+class <?php $builder->name; ?> extends CDbMigration
 {
 
 	public function safeUp()
@@ -16,10 +16,12 @@ class m120922_203026_woo extends CDbMigration
 //var_dump($this);
 //exit;
 echo $builder->beforeMigrationOutput();
-echo $builder->createCreateTablesMigration();
+
+
+echo $builder->createNewTableMigrations();
+
+
 echo $builder->afterMigrationOutput();
-//foreach($db->schema->tables as $table)
-//	echo $table->migrationCreate($db->schema)."\n";
 ?>
 	}
 	
@@ -27,10 +29,8 @@ echo $builder->afterMigrationOutput();
 	{
 <?php 
 echo $builder->beforeMigrationOutput();
-echo $builder->createDropTablesMigration();
+echo $builder->createDropTableMigrations();
 echo $builder->afterMigrationOutput();
-//foreach($db->schema->tables as $table)
-//	echo $table->migrationDrop($db->schema);
 ?>
 	}
 }

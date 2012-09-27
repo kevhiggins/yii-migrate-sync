@@ -158,11 +158,11 @@ class EMysqlSchema extends CMysqlSchema
 	
 	public function beforeMigrationOutput()
 	{
-		return '$this->getDbConnection()->schema->checkIntegrity(false)';
+		return '$this->getDbConnection()->schema->checkIntegrity(false);';
 	}
 	
 	public function afterMigrationOutput()
 	{
-		return '$this->getDbConnection()->schema->checkIntegrity(true)';
+		return '$this->getDbConnection()->schema->checkIntegrity(true);';
 	}	
 }
