@@ -1,10 +1,7 @@
 <?php
 Yii::import('system.cli.commands.MigrateCommand');
-//Yii::import('application.components.Controller');\
 Yii::import('application.components.db.schema.EDbMigrationBuilder');
-Yii::import('application.components.db.schema.mysql.EMysqlSchema');
-Yii::import('application.components.db.schema.mysql.EMysqlTableSchema');
-Yii::import('application.components.db.schema.mysql.EMysqlColumnSchema');
+Yii::import('application.components.db.schema.mysql.*');
 
 class EMigrateCommand extends MigrateCommand
 {

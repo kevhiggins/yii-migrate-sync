@@ -87,17 +87,16 @@ class EMysqlSchema extends CMysqlSchema
 		}
 		foreach($matches as $match)
 		{
+			$index = new EMysqlIndexSchema;
 			if($match[1] === 'FOREIGN ')
 				continue;
-			$isUnique = false;
-			if($match[1] === 'UNIQUE ' || $match[1] === 'PRIMARY ')
-			{
-				$isUnique = true;
-			}
-			$cols=array_map('trim',explode(',',str_replace('`','',$match[3])));
-			$indexName = $match[1] === 'PRIMARY ' ? 'PRIMARY' : str_replace('`', '', $match[2]);
 			
-			$table->indexes[$indexName] = array('columns'=>$cols, 'isUnique'=>$isUnique);
+			$index->isUnique = $match[1] === 'UNIQUE ' || $match[1] === 'PRIMARY ';
+			
+			$index->columns = array_map('trim',explode(',',str_replace('`','',$match[3])));
+			$index->name = $match[1] === 'PRIMARY ' ? 'PRIMARY' : str_replace('`', '', $match[2]);
+			
+			$table->indexes[$index->name] = $index;
 		}		
 	}
 	
@@ -164,5 +163,6 @@ class EMysqlSchema extends CMysqlSchema
 	public function afterMigrationOutput()
 	{
 		return '$this->getDbConnection()->schema->checkIntegrity(true);';
-	}	
+	}
+	
 }

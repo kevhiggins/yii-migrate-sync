@@ -43,14 +43,6 @@ class EDbMigrationBuilder extends CComponent
 		return "\t\t\$this->dropTable('{$table->name}');\n";
 	}
 	
-	public function createAlterTableMigration($table)
-	{
-		return $this->getTableDiffMigration(
-			$this->_db->schema[$table->name],
-			$this->_tmpDb->schema[$table->name]
-		);
-	}
-	
 	public function createAddColumnMigration($table, $column)
 	{
 		return "\t\t\$this->addColumn('{$table->name}', '{$column->name}', '{$column->type}');";
@@ -61,64 +53,110 @@ class EDbMigrationBuilder extends CComponent
 		return "\t\t\$this->dropColumn('{$table->name}', '{$column->name}');";
 	}
 	
-	//public function
-	
-	public function getTableDiffMigration($table, $tmpTable)
+	public function createAlterColumnMigration($table, $column)
 	{
-		$output .= '';
-		// Create new columns
-		foreach($this->getNewColumns($table, $tmpTable) as $column)
-			$output .= $this->createAddColumnMigration($table, $column);
-		
-		// Delete old columns
-		foreach($this->getOldColumns($table, $tmpTable) as $column)
-			$output .= $this->createDropColumnMigration($table, $column);
-		
-		// Find modified columns and alter them
-		foreach($this->getCurrentColumns($table, $tmpTable) as $column)
-			$output .= $this->getColumnDiffMigration(
-				$table->columns[$column->name],
-				$tmpTable->columns[$column->name]
-			); 
+		return "\t\t\$this->alterColumn('{$table->name}', '{$column->name}', '$column->type');\n";
 	}
 	
-	// TODO THIS
-	public function getColumnDiffMigration($column, $tmpColumn)
-	{
-		
-	}
 	
 	public function createNewTableMigrations()
 	{
 		$output = '';
-		foreach($this->getNewTables() as $table)
+		$currentTables = $this->getDbTables();
+		$previousTables = $this->getTmpDbTables();
+		
+		foreach($this->getNewKeys($currentTables, $previousTables) as $table)
 			$output .= $this->createCreateTableMigration($table)."\n";
 
-		foreach($this->getOldTables() as $table)
+		foreach($this->getOldKeys($currentTables, $previousTables) as $table)
 			$output .= $this->createDropTableMigration($table)."\n";
 		
-		foreach($this->getCurrentTables() as $table)
-			$output .= $this->createAlterTableMigrations($table)."\n";
+		foreach($this->getCurrentKeys($currentTables, $previousTables) as $table)
+			$output .= $this->createTableDiffMigration(
+				$currentTables[$table->name],
+				$previousTables[$table->name]			
+			)."\n";
 		
-		
-		// Find old tables and delete them
-		
-		
-		// Find modified tables and adjust them
 		
 		// Write constraints
 		
 		return $output;
 	}
 	
+	public function getTableDiffMigration($table, $tmpTable)
+	{
+		$output .= '';
+
+		// Create column migration
+		$output .= $this->getColumnDiffMigration($table, $tmpTable);
+		
+		// Create index migration
+		
+		// Create foreign key migration
+		
+		return $output;
+	}
+
+	/**
+	 * Create new columns, delete old columns, and alter changed columns.
+	 * @param EDbTableSchema $table
+	 * @param EDbTableSchema $tmpTable
+	 */
+	public function getColumnDiffMigration($table, $tmpTable)
+	{
+		$output = '';
+		
+		$currentColumns = $table->columns;
+		$prevColumns = $tmpTable->columns;
+		
+		// Create new columns
+		foreach($this->getNewKeys($currentColumns, $prevColumns) as $column)
+			$output .= $this->createAddColumnMigration($table, $column);
+		
+		// Delete old columns
+		foreach($this->getOldKeys($currentColumns, $prevColumns) as $column)
+			$output .= $this->createDropColumnMigration($table, $column);
+		
+		// Find modified columns and alter them
+		foreach($this->getCurrentKeys($currentColumns, $prevColumns) as $column)
+		{
+			$currentColumn = $table->columns[$column->name]->getType();
+			$previousColumn = $tmpTable->columns[$column->name]->getType();
+			
+			if($currentColumn->getType() !== $previousColumn->getType())
+				$output .= $this->createAlterColumnMigration($table, $currentColumn);			
+		}		
+		
+		return $output;
+	}
+	
+	public function getIndexDiffMigration($table, $tmpTable)
+	{
+		$output .= '';
+		$currentIndexes = $table->generateIndexes();
+		$prevIndexes = $table->generateIndexes();
+		
+		foreach($this->getNewKeys($currentIndexes, $prevIndexes) as $name=>$index)
+			$output .= $this->createCreateIndexMigration($table, $name, $index);
+		
+	}
+	
+	public function geetForeignKeyDiffMigration($table, $tmpTable)
+	{
+		
+	}
+	
 	public function createDropTableMigrations()
 	{
 		// Find new Tables and make them
 		$output = '';
-		foreach($this->getNewTables() as $table)
+		
+		$currentTables = $this->getDbTables();
+		$previousTables = $this->getTmpDbTables();		
+		foreach($this->getNewKeys($currentTables, $previousTables) as $table)
 			$output .= $this->createDropTableMigration($table)."\n";		
 		
-		foreach($this->getOldTables() as $table)
+		foreach($this->getOldKeys($currentTables, $previousTables) as $table)
 			$output .= $this->createCreateTableMigration($table)."\n";		
 		
 
@@ -141,53 +179,20 @@ class EDbMigrationBuilder extends CComponent
 		return $tables;		
 	}
 	
-	public function getNewTables()
+	public function getNewKeys($current, $previous)
 	{
-		return array_diff_key(
-			$this->getDbTables(),
-			$this->getTmpDbTables()
-		);
+		return array_diff_key($current, $previous);		
 	}
 	
-	public function getOldTables()
+	public function getOldKeys($current, $previous)
 	{
-		return array_diff_key(
-			$this->getTmpDbTables(),
-			$this->getDbTables()
-		);
+		return array_diff_key($previous, $current);
 	}
 	
-	public function getCurrentTables()
+	public function getCurrentKeys($current, $previous)
 	{
-		return array_intersect_key(
-			$this->getDbTables(),
-			$this->getTmpDbTables()
-		);
+		return array_intersect_key($current, $previous);
 	}
-	
-	public function getNewColumns($table,  $tmpTable)
-	{
-		return array_diff_key(
-			$table->columns,
-			$tmpTable->columns
-		);	
-	}
-	
-	public function getOldColumns($table, $tmpTable)
-	{
-		return array_diff_key(
-			$tmpTable->columns,
-			$table->columns
-		);	
-	}
-	
-	public function getCurrentColumns($table, $tmpTable)
-	{
-		return array_intersect_key(
-			$table->columns,
-			$tmpTable->columns
-		);
-	}	
 	
 	public function beforeMigrationOutput()
 	{
