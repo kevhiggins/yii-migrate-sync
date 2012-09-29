@@ -10,7 +10,7 @@ class EMysqlSchema extends CMysqlSchema
 	{
 		$table=new EMysqlTableSchema;
 		$this->resolveTableNames($table,$name);
-	
+
 		if($this->findColumns($table))
 		{
 			$this->findConstraints($table);
@@ -19,7 +19,7 @@ class EMysqlSchema extends CMysqlSchema
 		else
 			return null;
 	}
-	
+
 	/**
 	 * Creates a table column.
 	 * @param array $column column metadata
@@ -35,10 +35,10 @@ class EMysqlSchema extends CMysqlSchema
 		$c->isForeignKey=false;
 		$c->init($column['Type'],$column['Default']);
 		$c->autoIncrement=strpos(strtolower($column['Extra']),'auto_increment')!==false;
-	
+
 		return $c;
 	}
-	
+
 	/**
 	 * Collects the foreign key column details for the given table.
 	 * @param CMysqlTableSchema $table the table metadata
@@ -58,23 +58,23 @@ class EMysqlSchema extends CMysqlSchema
 			$types = array('name'=>str_replace('`','', $match[1]));
 			if(isset($match[5]))
 				$types += $this->findReferenceOptions($match[5]);
-						
+
 			$keys=array_map('trim',explode(',',str_replace('`','',$match[2])));
 			$fks=array_map('trim',explode(',',str_replace('`','',$match[4])));
 			foreach($keys as $k=>$name)
 			{
 				$table->foreignKeys[$name]=array(str_replace('`','',$match[3]),$fks[$k]);
 				if(isset($types))
-					$table->referenceOptions[$name] = $types; 
+					$table->referenceOptions[$name] = $types;
 				if(isset($table->columns[$name]))
 					$table->columns[$name]->isForeignKey=true;
 			}
 		}
-		
+
 		$this->findIndexes($table, $row);
 		$this->findEngine($table, $row);
 	}
-	
+
 	protected function findIndexes($table, $row)
 	{
 		// Extract indexes
@@ -90,16 +90,16 @@ class EMysqlSchema extends CMysqlSchema
 			$index = new EMysqlIndexSchema;
 			if($match[1] === 'FOREIGN ')
 				continue;
-			
+
 			$index->isUnique = $match[1] === 'UNIQUE ' || $match[1] === 'PRIMARY ';
-			
+
 			$index->columns = array_map('trim',explode(',',str_replace('`','',$match[3])));
 			$index->name = $match[1] === 'PRIMARY ' ? 'PRIMARY' : str_replace('`', '', $match[2]);
-			
+
 			$table->indexes[$index->name] = $index;
-		}		
+		}
 	}
-	
+
 	protected function findEngine($table, $row)
 	{
 		$engineRegexp = '/ENGINE=([^\s]+)/mi';
@@ -110,9 +110,9 @@ class EMysqlSchema extends CMysqlSchema
 				break;
 		}
 		if(isset($matches[1]))
-			$table->engine = $matches[1];		
+			$table->engine = $matches[1];
 	}
-	
+
 	protected function findReferenceOptions($data)
 	{
 		if(isset($data))
@@ -132,10 +132,10 @@ class EMysqlSchema extends CMysqlSchema
 			if(!isset($types['UPDATE']))
 				$types['UPDATE'] = null;
 			return $types;
-		}		
+		}
 		return null;
 	}
-	
+
 	public function generateForeignKey($name, $columns, $refTable, $refColumns, $delete=null, $update=null)
 	{
 		$columns=preg_split('/\s*,\s*/',$columns,-1,PREG_SPLIT_NO_EMPTY);
@@ -153,16 +153,25 @@ class EMysqlSchema extends CMysqlSchema
 		if($update!==null)
 			$sql.=' ON UPDATE '.$update;
 		return $sql;
-	}	
-	
+	}
+
 	public function beforeMigrationOutput()
 	{
 		return '$this->getDbConnection()->schema->checkIntegrity(false);';
 	}
-	
+
 	public function afterMigrationOutput()
 	{
 		return '$this->getDbConnection()->schema->checkIntegrity(true);';
 	}
-	
+
+	public function dropTables()
+	{
+		$command = new CDbCommand($this->dbConnection);
+		$this->checkIntegrity(false);
+		foreach($this->tables as $table)
+			$command->dropTable($table->name);
+		$this->checkIntegrity(true);
+	}
+
 }

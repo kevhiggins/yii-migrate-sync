@@ -8,6 +8,11 @@ return array(
 	// preloading 'log' component
 	'preload'=>array('log'),
 
+	'import'=>array(
+		'application.components.db.schema.*',
+		'application.components.db.schema.mysql.*',
+	),
+
 	// application components
 	'components'=>array(
 		// uncomment the following to use a MySQL database
@@ -54,8 +59,8 @@ return array(
 				'charset' => 'utf8',
 				'driverMap' => array(
 					'mysql' => 'EMysqlSchema',
-				),					
-			),						
+				),
+			),
 		),
 	),
 );

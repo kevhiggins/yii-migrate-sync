@@ -7,13 +7,14 @@ class EDbMigrationBuilder extends CComponent
 	protected $_command;
 	protected $_name;
 	
-	public function __construct($command, $db, $tmpDb)
+	public function __construct($db, $tmpDb, $command=null)
 	{
 		$this->_db = $db;
 		$this->_tmpDb = $tmpDb;
 		$this->_schema = $db->schema;
 		$this->_command = $command;
-		$this->_name = $command->getMigrationName();
+		if($command !== null)
+			$this->_name = $command->getMigrationName();
 	}
 	
 	public function getName()
