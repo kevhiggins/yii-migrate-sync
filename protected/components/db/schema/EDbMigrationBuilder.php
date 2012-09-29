@@ -27,8 +27,8 @@ class EDbMigrationBuilder extends CComponent
 		foreach($table->columns as $column)
 			$output .= "\t\t\t'{$column->name}' => \"".$column->generateSQL()."\",\n";
 		
-		foreach($table->generateIndexes($this->_schema) as $index)
-			$output .= "\t\t\t'$index',\n";
+		foreach($table->indexes as $index)
+			$output .= "\t\t\t'{$index->SQL}',\n";
 		
 		$output = rtrim($output, "\n,");
 		
@@ -45,12 +45,12 @@ class EDbMigrationBuilder extends CComponent
 	
 	public function createAddColumnMigration($table, $column)
 	{
-		return "\t\t\$this->addColumn('{$table->name}', '{$column->name}', '{$column->type}');";
+		return "\t\t\$this->addColumn('{$table->name}', '{$column->name}', '{$column->type}');\n";
 	}
 	
 	public function createDropColumnMigration($table, $column)
 	{
-		return "\t\t\$this->dropColumn('{$table->name}', '{$column->name}');";
+		return "\t\t\$this->dropColumn('{$table->name}', '{$column->name}');\n";
 	}
 	
 	public function createAlterColumnMigration($table, $column)
@@ -58,6 +58,13 @@ class EDbMigrationBuilder extends CComponent
 		return "\t\t\$this->alterColumn('{$table->name}', '{$column->name}', '$column->type');\n";
 	}
 	
+	public function createCreateIndexMigration($table, $name, $index)
+	{
+		if($index->isPrimary)
+			return "\t\t\$this->execute('{$index->SQL}');\n";
+		else
+			return "\t\t\$this->createIndex('$name', '{$table->name}', '{$index->formattedColumns}', {$index->isUnique});\n";
+	}
 	
 	public function createNewTableMigrations()
 	{
@@ -133,8 +140,8 @@ class EDbMigrationBuilder extends CComponent
 	public function getIndexDiffMigration($table, $tmpTable)
 	{
 		$output .= '';
-		$currentIndexes = $table->generateIndexes();
-		$prevIndexes = $table->generateIndexes();
+		$currentIndexes = $table->indexes;
+		$prevIndexes = $table->indexes;
 		
 		foreach($this->getNewKeys($currentIndexes, $prevIndexes) as $name=>$index)
 			$output .= $this->createCreateIndexMigration($table, $name, $index);

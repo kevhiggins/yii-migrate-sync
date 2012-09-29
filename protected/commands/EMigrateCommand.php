@@ -15,8 +15,6 @@ class EMigrateCommand extends MigrateCommand
 	
 	public function actionSync($args)
 	{
-		
-		
 		//$db = $this->getDbConnection();
 		//CVarDumper::dump($db->schema->getTables());
 		$this->checkTables();

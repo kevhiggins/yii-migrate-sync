@@ -7,7 +7,7 @@
 ?>
 <?php echo "<?php\n"; ?>
 
-class <?php $builder->name; ?> extends CDbMigration
+class <?php echo $builder->name; ?> extends CDbMigration
 {
 
 	public function safeUp()
