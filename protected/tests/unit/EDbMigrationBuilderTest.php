@@ -1,5 +1,8 @@
 <?php
-class EDbMigrationBuilderTest extends CDbTestCase
+class EDbMigrationBuilderTest extends CTestCase
 {
-	
+	public function testTest()
+	{
+		$this->assertTrue(false);
+	}
 }
