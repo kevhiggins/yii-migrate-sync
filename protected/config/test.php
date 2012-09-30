@@ -47,6 +47,7 @@ return CMap::mergeArray(
 			),
 			'emigrate'=>array(
 				'migrationPath'=>'application.tests.migrations.db2',
+				'syncTemplateFile'=>'test_migration.php',
 			),
 		),
 	)

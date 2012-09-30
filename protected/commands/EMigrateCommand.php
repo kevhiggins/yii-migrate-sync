@@ -13,12 +13,18 @@ class EMigrateCommand extends MigrateCommand
 	protected $_schema;
 	protected $_migrations;
 
-	public $template;
+	public $syncTemplateDirectory;
+	public $syncTemplateFile = 'migration.php';
 
 	public function __construct($name, $runner)
 	{
 		parent::__construct($name, $runner);
-		$this->template = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
+		$this->syncTemplateDirectory = __DIR__.DIRECTORY_SEPARATOR.'templates';
+	}
+
+	public function getSyncTemplatePath()
+	{
+		return $this->syncTemplateDirectory.DIRECTORY_SEPARATOR.$this->syncTemplateFile;
 	}
 
 	public function actionSync($args)

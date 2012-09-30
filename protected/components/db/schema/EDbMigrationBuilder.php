@@ -220,10 +220,10 @@ class EDbMigrationBuilder extends CComponent
 
 	public function writeTestMigration($up, $down)
 	{
-		var_dump($this->getMigrationPath());
+		var_dump($this->_command->syncTemplatePath);
 		file_put_contents(
 			$this->getMigrationPath(),
-			$this->_command->renderFile($this->_command->template, array('builder'=>$this, 'up'=>$up, 'down'=>$down), true)
+			$this->_command->renderFile($this->_command->syncTemplatePath, array('builder'=>$this, 'up'=>$up, 'down'=>$down), true)
 		);
 	}
 }
