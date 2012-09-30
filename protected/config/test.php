@@ -37,11 +37,16 @@ return CMap::mergeArray(
 				'class'=>'system.cli.commands.MigrateCommand',
 				'connectionID'=>'db1',
 				'interactive'=>false,
+				'migrationPath'=>'application.tests.migrations.db1',
 			),
 			'migrate2'=>array(
 				'class'=>'system.cli.commands.MigrateCommand',
 				'connectionID'=>'db2',
 				'interactive'=>false,
+				'migrationPath'=>'application.tests.migrations.db2',
+			),
+			'emigrate'=>array(
+				'migrationPath'=>'application.tests.migrations.db2',
 			),
 		),
 	)

@@ -13,6 +13,14 @@ class EMigrateCommand extends MigrateCommand
 	protected $_schema;
 	protected $_migrations;
 
+	public $template;
+
+	public function __construct($name, $runner)
+	{
+		parent::__construct($name, $runner);
+		$this->template = __DIR__.DIRECTORY_SEPARATOR.'templates'.DIRECTORY_SEPARATOR.'migration.php';
+	}
+
 	public function actionSync($args)
 	{
 		//$db = $this->getDbConnection();

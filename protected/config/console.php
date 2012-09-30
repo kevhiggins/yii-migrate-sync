@@ -11,6 +11,7 @@ return array(
 	'import'=>array(
 		'application.components.db.schema.*',
 		'application.components.db.schema.mysql.*',
+		'system.cli.commands.MigrateCommand',
 	),
 
 	// application components
@@ -25,6 +26,17 @@ return array(
 //			'driverMap' => array(
 //				'mysql' => 'EMysqlSchema',
 //			),
+		),
+		'db1'=>array(
+			'class'=>'CDbConnection',
+			'connectionString' => 'mysql:host=localhost;dbname=test1',
+			'emulatePrepare' => true,
+			'username' => 'root',
+			'password' => '',
+			'charset' => 'utf8',
+			'driverMap' => array(
+				'mysql' => 'EMysqlSchema',
+			),
 		),
 		'log'=>array(
 			'class'=>'CLogRouter',
@@ -62,5 +74,11 @@ return array(
 				),
 			),
 		),
+		'testmigrate'=>array(
+			'class'=>'system.cli.commands.MigrateCommand',
+			'connectionID'=>'db1',
+			'interactive'=>false,
+			'migrationPath'=>'application.tests.migrations.db1',
+		)
 	),
 );

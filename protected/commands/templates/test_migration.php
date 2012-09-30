@@ -14,7 +14,7 @@ class <?php echo $builder->name; ?> extends CDbMigration
 	{
 <?php
 echo $builder->beforeMigrationOutput();
-echo $builder->createNewTableMigrations();
+echo $up;
 echo $builder->afterMigrationOutput();
 ?>
 	}
@@ -23,7 +23,7 @@ echo $builder->afterMigrationOutput();
 	{
 <?php
 echo $builder->beforeMigrationOutput();
-echo $builder->createDropTableMigrations();
+echo $down;
 echo $builder->afterMigrationOutput();
 ?>
 	}

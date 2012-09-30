@@ -174,4 +174,36 @@ class EMysqlSchema extends CMysqlSchema
 		$this->checkIntegrity(true);
 	}
 
+	/**
+	 * Returns true if the schema are equal.
+	 * @param EMysqlSchema $schema
+	 * @return bool whether or not the schema are equal.
+	 */
+	public function equals($schema)
+	{
+		if(!$this->shallowArrayEquals($this->tables, $schema->tables))
+			return false;
+
+		foreach($this->tables as $table)
+		{
+			$result1 = $this->getDbConnection()->createCommand('SHOW CREATE TABLE '.$table->rawName)->queryRow();
+			$result2 = $schema->getDbConnection()->createCommand('SHOW CREATE TABLE '.$table->rawName)->queryRow();
+			if($result1 !== $result2)
+				return false;
+		}
+
+		return true;
+	}
+
+	public function shallowArrayEquals($a, $b)
+	{
+		if(count($a) !== count($b))
+			return false;
+
+		if(count($a) !== count(array_intersect_key($a, $b)))
+			return false;
+
+		return true;
+	}
+
 }
