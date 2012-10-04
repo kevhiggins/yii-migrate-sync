@@ -187,8 +187,6 @@ class EMysqlSchema extends CMysqlSchema
 		{
 			$result1 = $this->getDbConnection()->createCommand('SHOW CREATE TABLE '.$table->rawName)->queryRow();
 			$result2 = $schema->getDbConnection()->createCommand('SHOW CREATE TABLE '.$table->rawName)->queryRow();
-			CVarDumper::dump($result1);
-			CVarDumper::dump($result2);
 			if($result1 !== $result2)
 				return false;
 		}

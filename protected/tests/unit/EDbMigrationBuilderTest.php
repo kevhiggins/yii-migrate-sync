@@ -19,6 +19,10 @@ class EDbMigrationBuilderTest extends CDbTestCase
 	protected $_migrate1;
 	protected $_migrate2;
 
+	private static $migrationCount = 1;
+
+	private $migrationName;
+
 	public function __construct($name = NULL, array $data = array(), $dataName = '')
 	{
 		parent::__construct($name, $data, $dataName);
@@ -28,36 +32,18 @@ class EDbMigrationBuilderTest extends CDbTestCase
 
 		$runner = Yii::app()->getCommandRunner();
 		$this->_builder = new EDbMigrationBuilder($this->_db1, $this->_db2, $runner->createCommand('emigrate'));
+		$this->migrationName = $this->_builder->getName();
 		$this->_migrate1 = $runner->createCommand('migrate1');
 		$this->_migrate2 = $runner->createCommand('migrate2');
 	}
 
-	protected function resetDatabases()
-	{
-		$this->resetDatabase($this->_db1);
-		$this->resetDatabase($this->_db2);
-	}
-
-	protected function resetDatabase($db)
-	{
-		$db->schema->dropTables();
-		$db->schema->refresh();
-	}
-
-	protected function setUp()
-	{
-		parent::setUp();
-		$this->resetDatabases();
-	}
-
-	/*
 	public function testCreateCreateTableMigration()
 	{
 		$this->createBaseTable($this->_db1);
 		$this->syncDb2($this->_builder->createCreateTableMigration($this->_db1->schema->tables['test']));
 		$this->assertTrue($this->_db1->schema->equals($this->_db2->schema));
 	}
-*/
+
 	public function testCreateAddColumnMigration()
 	{
 		$this->createBaseTable($this->_db1);
@@ -69,13 +55,16 @@ class EDbMigrationBuilderTest extends CDbTestCase
 				$this->_db1->schema->tables['test'],
 				$this->_db1->schema->tables['test']->columns['testcolumn']
 		);
+
 		$this->syncDb2($output);
 		$this->assertTrue($this->_db1->schema->equals($this->_db2->schema));
 	}
 
 	protected function syncDb2($output)
 	{
+		$this->_builder->setName($this->migrationName.'_'.self::$migrationCount);
 		$this->_builder->writeTestMigration($output, '');
+		self::$migrationCount++;
 		$this->_migrate2->run(array('up'));
 		$this->_db2->schema->refresh();
 		$this->_db2->createCommand()->dropTable('tbl_migration');
@@ -105,5 +94,23 @@ class EDbMigrationBuilderTest extends CDbTestCase
 //			'CONSTRAINT `test_ibfk_8` FOREIGN KEY (`child`) REFERENCES `arg` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION',
 //			'CONSTRAINT `test_ibfk_9` FOREIGN KEY (`fkey`) REFERENCES `test` (`child`)',
 		), 'ENGINE=InnoDB');
+	}
+
+	protected function resetDatabases()
+	{
+		$this->resetDatabase($this->_db1);
+		$this->resetDatabase($this->_db2);
+	}
+
+	protected function resetDatabase($db)
+	{
+		$db->schema->dropTables();
+		$db->schema->refresh();
+	}
+
+	protected function setUp()
+	{
+		parent::setUp();
+		$this->resetDatabases();
 	}
 }

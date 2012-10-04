@@ -22,6 +22,11 @@ class EDbMigrationBuilder extends CComponent
 		return $this->_name;
 	}
 
+	public function setName($name)
+	{
+		$this->_name = $name;
+	}
+
 	public function createCreateTableMigration($table)
 	{
 		$output = "\t\t\$this->createTable('{$table->name}', array(\n";
@@ -46,7 +51,7 @@ class EDbMigrationBuilder extends CComponent
 
 	public function createAddColumnMigration($table, $column)
 	{
-		return "\t\t\$this->addColumn('{$table->name}', '{$column->name}', '{$column->type}');\n";
+		return "\t\t\$this->addColumn('{$table->name}', '{$column->name}', \"{$column->definition}\");\n";
 	}
 
 	public function createDropColumnMigration($table, $column)
@@ -56,7 +61,7 @@ class EDbMigrationBuilder extends CComponent
 
 	public function createAlterColumnMigration($table, $column)
 	{
-		return "\t\t\$this->alterColumn('{$table->name}', '{$column->name}', '$column->type');\n";
+		return "\t\t\$this->alterColumn('{$table->name}', '{$column->name}', \"$column->definition\");\n";
 	}
 
 	public function createCreateIndexMigration($table, $name, $index)
@@ -128,10 +133,10 @@ class EDbMigrationBuilder extends CComponent
 		// Find modified columns and alter them
 		foreach($this->getCurrentKeys($currentColumns, $prevColumns) as $column)
 		{
-			$currentColumn = $table->columns[$column->name]->getType();
-			$previousColumn = $tmpTable->columns[$column->name]->getType();
+			$currentColumn = $table->columns[$column->name]->getDefinition();
+			$previousColumn = $tmpTable->columns[$column->name]->getDefinition();
 
-			if($currentColumn->getType() !== $previousColumn->getType())
+			if($currentColumn->getDefinition() !== $previousColumn->getDefinition())
 				$output .= $this->createAlterColumnMigration($table, $currentColumn);
 		}
 
@@ -220,7 +225,6 @@ class EDbMigrationBuilder extends CComponent
 
 	public function writeTestMigration($up, $down)
 	{
-		var_dump($this->_command->syncTemplatePath);
 		file_put_contents(
 			$this->getMigrationPath(),
 			$this->_command->renderFile($this->_command->syncTemplatePath, array('builder'=>$this, 'up'=>$up, 'down'=>$down), true)

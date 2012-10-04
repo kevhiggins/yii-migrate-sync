@@ -14,8 +14,8 @@ class EMysqlColumnSchema extends CMysqlColumnSchema
 			$output .= ' AUTO_INCREMENT';
 		return $output;
 	}
-	
-	public function getType()
+
+	public function getDefinition()
 	{
 		return $this->generateSQL();
 	}
